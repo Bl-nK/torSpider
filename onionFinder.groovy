@@ -30,7 +30,11 @@ Boolean testConnection(address){
     try {
         connection.connect()
         println "$address - ${connection.getResponseCode()}"
-        return true
+        if (connection.getResponseCode() == 200){
+            return true            
+        } else {
+            return false
+        }
     }
     catch(java.net.SocketException ex){
         println "$address - No Connection"
