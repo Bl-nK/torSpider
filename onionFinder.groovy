@@ -10,11 +10,12 @@ def spider(address){
         String data = new URL(address).getText()
         def uniqueOnions = data.findAll(/(?:([a-z]+):\/\/){0,1}([a-z2-7]{16})\.onion(?::(\d+)){0,1}/).unique()
         if(uniqueOnions){
-           uniqueOnions.eachParallel{onion ->
-               testConnection(onion)
-               spider(onion)
-           }
-       }
+            uniqueOnions.eachParallel{onion ->
+                if(testConnection(onion)){
+                    spider(onion)
+                }
+            }
+        }
     }
     catch (java.io.IOException ex){
         println "$address Failed - Can't Spider"
@@ -22,17 +23,19 @@ def spider(address){
 }
 
 
-def testConnection(address){
+Boolean testConnection(address){
     URL url = new URL(address)
     HttpURLConnection connection = (HttpURLConnection)url.openConnection()
     connection.setRequestMethod("GET")
     try {
         connection.connect()
         println "$address - ${connection.getResponseCode()}"
-        }
+        return true
+    }
     catch(java.net.SocketException ex){
-            println "$address - No Connection"
-        }
+        println "$address - No Connection"
+        return false
+    }
 }
 
 withPool{
