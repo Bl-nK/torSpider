@@ -10,7 +10,14 @@ def spider(address){
         String data = new URL(address).getText()
         def uniqueOnions = data.findAll(/(?:([a-z]+):\/\/){0,1}([a-z2-7]{16})\.onion(?::(\d+)){0,1}/).unique()
         if(uniqueOnions){
+            uniqueOnions = uniqueOnions.collect{
+                if(!it.startsWith('http://') && !it.startsWith('https://')){
+                    it = "http://$it"
+                } else {
+                    it = it
+                }
             uniqueOnions.eachParallel{onion ->
+                if(!onion)
                 if(testConnection(onion)){
                     spider(onion)
                 }
