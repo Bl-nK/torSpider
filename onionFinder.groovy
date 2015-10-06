@@ -16,6 +16,7 @@ def spider(address){
                 } else {
                     it = it
                 }
+            }
             uniqueOnions.eachParallel{onion ->
                 if(!onion)
                 if(testConnection(onion)){
@@ -28,7 +29,6 @@ def spider(address){
         println "$address Failed - Can't Spider"
     }
 }
-
 
 Boolean testConnection(address){
     URL url = new URL(address)
