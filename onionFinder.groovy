@@ -18,7 +18,6 @@ def spider(address){
                 }
             }
             uniqueOnions.eachParallel{onion ->
-                if(!onion)
                 if(testConnection(onion)){
                     spider(onion)
                 }
