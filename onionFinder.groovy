@@ -1,6 +1,6 @@
 @Grapes(
     @Grab(group='org.codehaus.gpars', module='gpars', version='1.2.1')
-    )
+)
 
 import static groovyx.gpars.GParsPool.withPool
 
@@ -52,13 +52,13 @@ Boolean testConnection(String address){
                 println "$address - No Connection"
                 return false
             }
-        }
-	else {
-	    return false
-	}
-
+    }
+    else {
+        return false
     }
 
-    withPool{
-        spider('http://thehiddenwiki.org')
-    }
+}
+
+withPool{
+    spider('http://thehiddenwiki.org')
+}
