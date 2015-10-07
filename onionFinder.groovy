@@ -4,7 +4,6 @@
 
 import static groovyx.gpars.GParsPool.withPool
 
-CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 
 System.properties.putAll( ["proxySet":"true","socksProxyHost":"localhost", "socksProxyPort":"9050"] )
 void spider(String address){
@@ -36,6 +35,7 @@ void spider(String address){
 }
 
 Boolean testConnection(String address){
+    CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
     URL url = new URL(address)
     HttpURLConnection connection = (HttpURLConnection)url.openConnection()
     connection.setRequestMethod("GET")
@@ -69,5 +69,5 @@ Boolean testConnection(String address){
 }
 
 withPool{
-    spider('http://thehiddenwiki.org')
+    spider(args[0])
 }
