@@ -4,6 +4,8 @@
 
 import static groovyx.gpars.GParsPool.withPool
 
+CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+
 System.properties.putAll( ["proxySet":"true","socksProxyHost":"localhost", "socksProxyPort":"9050"] )
 void spider(String address){
     try {
