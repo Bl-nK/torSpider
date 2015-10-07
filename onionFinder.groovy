@@ -18,11 +18,7 @@ void spider(String address){
                     it = it
                 }
             }
-            String parOrNot = 'each'
-            if (uniqueOnions.size() > 1){
-                parOrNot = 'eachParallel'
-            }
-            uniqueOnions."${parOrNot}"{onion ->
+            uniqueOnions.each{onion ->
                 if(testConnection(onion)){
                     spider(onion)
                 }
