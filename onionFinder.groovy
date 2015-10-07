@@ -52,7 +52,11 @@ Boolean testConnection(String address){
                 }
             }
             catch(java.net.SocketException ex){
-                println "$address - No Connection"
+                println "$address - No Connection - $ex"
+                return false
+            }
+            catch(java.net.ProtocolException ex){
+                println "$address - No Connection - $ex"
                 return false
             }
     }
