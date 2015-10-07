@@ -7,7 +7,7 @@ import static groovyx.gpars.GParsPool.withPool
 System.properties.putAll( ["proxySet":"true","socksProxyHost":"localhost", "socksProxyPort":"9050"] )
 void spider(String address){
     try {
-        String data = new URL(address).getText([[connectTimeout: 10000, readTimeout: 30000]])
+        String data = new URL(address).getText([connectTimeout: 10000, readTimeout: 30000])
         def uniqueOnions = data.findAll(/(?:([a-z]+):\/\/){0,1}([a-z2-7]{16})\.onion(?::(\d+)){0,1}/).unique()
         if(uniqueOnions){
             uniqueOnions = uniqueOnions.collect{
@@ -18,7 +18,7 @@ void spider(String address){
                     it = it
                 }
             }
-            uniqueOnions.each{onion ->
+            uniqueOnions.eachParallel{onion ->
                 if(testConnection(onion)){
                     spider(onion)
                 }
