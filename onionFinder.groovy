@@ -1,8 +1,19 @@
-@Grapes(
-    @Grab(group='org.codehaus.gpars', module='gpars', version='1.2.1')
-)
+@Grapes([
+    @Grab(group='org.xerial',module='sqlite-jdbc',version='3.7.2'),
+    @Grab(group='org.codehaus.gpars', module='gpars', version='1.2.1'),
+    @GrabConfig(systemClassLoader=true)
+])
+ 
+import java.sql.*
+import org.sqlite.SQLite
+import groovy.sql.Sql
 
 import static groovyx.gpars.GParsPool.withPool
+
+def sql = Sql.newInstance("jdbc:sqlite:onion.db", "org.sqlite.JDBC")
+def onions = sql.dataSet('onions')
+sql.execute("drop table if exists onions")
+sql.execute("create table onions (child string, parent string, spidered boolean, tested boolean)")
 
 
 System.properties.putAll( ["proxySet":"true","socksProxyHost":"localhost", "socksProxyPort":"9050"] )
@@ -20,13 +31,9 @@ void spider(String address){
                     it = it
                 }
             }
-            uniqueOnions.eachParallel{onion ->
-                if(testConnection(onion)){
-		    withPool{
-		        spider(onion)
-		    }
-                }
-            }
+            uniqueOnions.each{onion ->
+                onions.add(parent:address,child:it,spidered:false,tested:false)
+	    }
         }
     }
     catch (java.io.IOException ex){
