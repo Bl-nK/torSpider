@@ -6,7 +6,9 @@
 
 import static groovyx.gpars.GParsPool.withPool
 import classes.*
-new DataMan().createDB()
+
+
+DataMan dataMan = new DataMan()
 
 System.properties.putAll( ["proxySet":"true","socksProxyHost":"localhost", "socksProxyPort":"9050"] )
 void spider(String address){
@@ -37,33 +39,19 @@ Boolean testConnection(String address){
     URL url = new URL(address)
     HttpURLConnection connection = (HttpURLConnection)url.openConnection()
     connection.setRequestMethod("GET")
-    File testedUrls = new File(new File(getClass().protectionDomain.codeSource.location.path).parent + "/testedUrls.txt")
-    File successfulUrls = new File(new File(getClass().protectionDomain.codeSource.location.path).parent + "/successfulUrls.txt")
-    if (!testedUrls.text.find(address)){
-        testedUrls << "$address${System.getProperty("line.separator")}"
         try {
             connection.connect()
             println "$address - ${connection.getResponseCode()}"
             if (connection.getResponseCode() == 200){
-		successfulUrls << "$address${System.getProperty("line.separator")}"
-                return true
-                } else {
-                    return false
-                }
-            }
-            catch(java.net.SocketException ex){
-                println "$address - No Connection - $ex"
-                return false
-            }
-            catch(java.net.ProtocolException ex){
-                println "$address - No Connection - $ex"
-                return false
-            }
-    }
-    else {
-        return false
-    }
-
+            
+	    }
+        }
+        catch(java.net.SocketException ex){
+            println "$address - No Connection - $ex"
+        }
+        catch(java.net.ProtocolException ex){
+            println "$address - No Connection - $ex"
+        }
 }
 
 if (args.size() < 1) {
@@ -71,6 +59,8 @@ if (args.size() < 1) {
     System.exit(1)
 }
 
-withPool{
-    spider(args[0])
-}
+dataMan.createDB()
+spider(args[0])
+
+def onionsToTest = dataMan.getOnionsForTesting(test)
+def onionsToTest = dataMan.getOnionsForTesting(spider)
