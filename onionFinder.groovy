@@ -3,25 +3,18 @@
     @Grab(group='org.codehaus.gpars', module='gpars', version='1.2.1'),
     @GrabConfig(systemClassLoader=true)
 ])
- 
-import java.sql.*
-import org.sqlite.SQLite
-import groovy.sql.Sql
 
 import static groovyx.gpars.GParsPool.withPool
 
-def sql = Sql.newInstance("jdbc:sqlite:onion.db", "org.sqlite.JDBC")
-def onions = sql.dataSet('onions')
-sql.execute("drop table if exists onions")
-sql.execute("create table onions (child string, parent string, spidered boolean, tested boolean)")
-
+new DataMan().createDB()
 
 System.properties.putAll( ["proxySet":"true","socksProxyHost":"localhost", "socksProxyPort":"9050"] )
 void spider(String address){
+    DataMan dataMan = new DataMan()
     try {
         String data = new URL(address).getText([connectTimeout: 10000, readTimeout: 30000])
         def uniqueOnions = data.findAll(/(?:([a-z]+):\/\/){0,1}([a-z2-7]{16})\.onion(?::(\d+)){0,1}/).unique()
-	println "Found ${uniqueOnions.size()} unique onions at $address"
+        println "Found ${uniqueOnions.size()} unique onions at $address"
         if(uniqueOnions){
             uniqueOnions = uniqueOnions.collect{
                 if(!it.startsWith('http://') && !it.startsWith('https://')){
@@ -31,9 +24,7 @@ void spider(String address){
                     it = it
                 }
             }
-            uniqueOnions.each{onion ->
-                onions.add(parent:address,child:it,spidered:false,tested:false)
-	    }
+            dataMan.addOnions(uniqueOnions,address)
         }
     }
     catch (java.io.IOException ex){
