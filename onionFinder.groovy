@@ -58,5 +58,5 @@ Boolean testConnection(String address){
 dataMan.createDB()
 spider(args[0])
 
-def onionsToTest = dataMan.getOnionsForTesting(test)
-def onionsToTest = dataMan.getOnionsForTesting(spider)
+def onionsToTest = dataMan.getOnionsForTesting('test')
+def onionsToTest = dataMan.getOnionsForTesting('spider')
