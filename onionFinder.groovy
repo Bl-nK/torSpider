@@ -30,7 +30,7 @@ void spider(String address){
         }
     }
     catch (java.io.IOException ex){
-        println "$address Failed - Can't Spider"
+        println "$address Failed - Can't Spider - $ex"
     }
 }
 
