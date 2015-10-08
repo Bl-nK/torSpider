@@ -12,15 +12,11 @@ class DataMan{
 	def createDB(){
 		println sql.getClass()
 		sql.execute("drop table if exists onions")
-		sql.execute("create table onions (child string, parent string, spidered boolean, tested boolean)")
+		sql.execute("create table onions (id integer primary key, url string, parent integer references onions (id), spidered boolean, tested boolean)")
 
 	}
 
 	def addOnions(List onions, String parent){
-		def dataset = sql.dataSet('onions')
-		onions.each{
-			dataset.add(parent:parent,child:it,spidered:false,tested:false)
-		}
 	}
 
 }
