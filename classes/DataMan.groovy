@@ -8,15 +8,18 @@ class DataMan{
 
 	static Sql sql = Sql.newInstance("jdbc:sqlite:onion.db", "org.sqlite.JDBC")
 
-
 	def createDB(){
-		println sql.getClass()
-		sql.execute("drop table if exists onions")
-		sql.execute("create table onions (id integer primary key, url string, parent integer references onions (id), spidered boolean, tested boolean)")
+	    sql.execute("drop table if exists onions")
+	    sql.execute("create table onions (id integer primary key, url string, parent integer references onions (id), spidered boolean, tested boolean)")
 
 	}
 
 	def addOnions(List onions, String parent){
+	    sql.execute("PRAGMA foreign_keys = ON")
+	    def parentId = sql.executeInsert("insert or ignore into onions (url,spidered,tested) values (?,?,?)",[parent,true,true])
+	    onions.each{
+		def insertStatement = sql.execute("insert into onions (url,parent,spidered,tested) values (?,?,?,?)",[it,parentId[0][0],false,false])
+	    }
 	}
 
 }
