@@ -5,7 +5,7 @@
 ])
 
 import static groovyx.gpars.GParsPool.withPool
-
+import classes.*
 new DataMan().createDB()
 
 System.properties.putAll( ["proxySet":"true","socksProxyHost":"localhost", "socksProxyPort":"9050"] )
