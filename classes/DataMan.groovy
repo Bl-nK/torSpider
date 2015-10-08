@@ -1,3 +1,5 @@
+package classes
+
 import java.sql.*
 import org.sqlite.SQLite
 import groovy.sql.Sql
