@@ -10,7 +10,7 @@ class DataMan{
 
 	def createDB(){
 	    sql.execute("drop table if exists onions")
-	    sql.execute("create table onions (id integer primary key, url string, parent integer references onions (id), spidered boolean, tested boolean, status string)")
+	    sql.execute("create table onions (id integer primary key, url string, parent integer references onions (id), spidered boolean, tested boolean, status boolean)")
 
 	}
 
@@ -33,13 +33,13 @@ class DataMan{
 	    if (operation == "test"){
 	        def toTest = sql.rows('select url from onions where not (tested)')
 	    } else if (operation == "spider"){
-	        def toTest = sql.rows('select url from onions where tested = 1 AND spidered = 0')
+	        def toTest = sql.rows('select url from onions where tested = 1 AND spidered = 0 AND status = 1')
 	    }
 	}
 
-	def modifyRecord(String url, String type, Boolean value){
+	def modifyRecord(String url, String type, Boolean value, Boolean status){
 		if (type == "test"){
-	        def tested = sql.executeUpdate('update onions set tested = ? where url = ?',[value, url])
+	        def tested = sql.executeUpdate('update onions set tested = ?, status = ? where url = ?',[value, status, url])
 	    } else if (type == "spider"){
 	        def spidered = sql.executeUpdate('update onions set spidered = ? where url = ?',[value, url])
 	    }

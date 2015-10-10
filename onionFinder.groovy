@@ -27,7 +27,7 @@ void spider(String address, DataMan dataMan){
                     }
                 }
                 dataMan.addOnions(uniqueOnions,address)
-                dataMan.modifyRecord(address,'spider',true)
+                dataMan.modifyRecord(address,'spider',true, true)
             }
         }
     }
@@ -45,7 +45,9 @@ Boolean testConnection(String address, DataMan dataMan){
             connection.connect()
             println "$address - ${connection.getResponseCode()}"
             if (connection.getResponseCode() == 200){
-                dataMan.modifyRecord(address,'test',true)                    
+                dataMan.modifyRecord(address,'test', true, true)                    
+            } else {
+                dataMan.modifyRecord(address,'test', true, false)
             }
         }
         catch(java.net.SocketException ex){
@@ -62,11 +64,13 @@ if (args.size() < 1) {
 }
 
 dataMan.createDB()
-spider(args[0], dataMan)
 
-def onionsToTest = dataMan.getOnionsForTesting('test')
 withPool{
-    onionsToTest.eachParallel{testConnection(it.url, dataMan)}
-    def onionsToSpider = dataMan.getOnionsForTesting('spider')
-    onionsToSpider.eachParallel{spider(it.url, dataMan)}
+    spider(args[0], dataMan) //Spider the given URL
+    while(true) {
+        def onionsToTest = dataMan.getOnionsForTesting('test') //Create a list of onions to be tested
+        onionsToTest.eachParallel{testConnection(it.url, dataMan)} //Test each onion
+        onionsToSpider = dataMan.getOnionsForTesting('spider')//Create a list of onions eligible for spider
+        onionsToSpider.eachParallel{spider(it.url, dataMan)}//Spider onions
+    }
 }
