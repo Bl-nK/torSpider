@@ -17,17 +17,19 @@ void spider(String address, DataMan dataMan){
         def uniqueOnions = data.findAll(/(?:([a-z]+):\/\/){0,1}([a-z2-7]{16})\.onion(?::(\d+)){0,1}/).unique()
         println "Found ${uniqueOnions.size()} unique onions at $address"
         if(uniqueOnions){
-            uniqueOnions = uniqueOnions.collect{
-                if(!it.startsWith('http://') && !it.startsWith('https://')){
-                    it = "http://$it"
+            withPool{
+                uniqueOnions = uniqueOnions.collectParallel{
+                    if(!it.startsWith('http://') && !it.startsWith('https://')){
+                        it = "http://$it"
+                    }
+                    else {
+                        it = it
+                    }
                 }
-                else {
-                    it = it
-                }
+                dataMan.addOnions(uniqueOnions,address)
+                dataMan.modifyRecord(address,'spider',true)
             }
-            dataMan.addOnions(uniqueOnions,address)
         }
-        dataMan.modifyRecord(address,'spider',true)
     }
     catch (java.io.IOException ex){
         println "$address Failed - Can't Spider - $ex"
