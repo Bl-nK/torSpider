@@ -26,7 +26,7 @@ class DataMan{
 	    if (operation == "test"){
 	        def toTest = sql.rows('select url from onions where not (tested)')
 	    } else if (operation == "spider"){
-	        def toTest = sql.rows('select url from onions where not (spidered)')
+	        def toTest = sql.rows('select url from onions where not (spidered) and tested')
 	    }
 	}
 
