@@ -68,6 +68,11 @@ Boolean testConnection(String address){
 
 }
 
+if (args.size() < 1) {
+    println "Please supply a URL to begin the spider process"
+    System.exit(1)
+}
+
 withPool{
     spider(args[0])
 }
