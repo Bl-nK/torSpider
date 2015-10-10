@@ -17,7 +17,7 @@ class DataMan{
 	def addOnions(List onions, String parent){
 	    sql.execute("PRAGMA foreign_keys = ON")
 	    sql.execute("PRAGMA synchronous = OFF")
-	    def parentId = sql.executeInsert("insert or ignore into onions (url,spidered,tested,status) values (?,?,?,?)",[parent,true,true,'success'])
+	    def parentId = sql.executeInsert("insert or ignore into onions (url,spidered,tested,status) values (?,?,?,?)",[parent,true,true,1])
 		sql.withBatch(1000,"insert into onions (url,parent,spidered,tested,status) values (?,?,?,?,?)"){ ps ->
 			onions.each{
 				ps.addBatch(it,parentId[0][0],false,false,null)
