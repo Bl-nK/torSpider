@@ -11,8 +11,7 @@ import classes.*
 DataMan dataMan = new DataMan()
 
 System.properties.putAll( ["proxySet":"true","socksProxyHost":"localhost", "socksProxyPort":"9050"] )
-void spider(String address){
-    DataMan dataMan = new DataMan()
+void spider(String address, DataMan dataMan){
     try {
         String data = new URL(address).getText([connectTimeout: 10000, readTimeout: 30000])
         def uniqueOnions = data.findAll(/(?:([a-z]+):\/\/){0,1}([a-z2-7]{16})\.onion(?::(\d+)){0,1}/).unique()
@@ -28,13 +27,14 @@ void spider(String address){
             }
             dataMan.addOnions(uniqueOnions,address)
         }
+        dataMan.modifyRecord(address,'spider',true)
     }
     catch (java.io.IOException ex){
         println "$address Failed - Can't Spider - $ex"
     }
 }
 
-Boolean testConnection(String address){
+Boolean testConnection(String address, DataMan dataMan){
     CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
     URL url = new URL(address)
     HttpURLConnection connection = (HttpURLConnection)url.openConnection()
@@ -43,8 +43,8 @@ Boolean testConnection(String address){
             connection.connect()
             println "$address - ${connection.getResponseCode()}"
             if (connection.getResponseCode() == 200){
-            
-	    }
+                dataMan.modifyRecord(address,'test',true)                    
+            }
         }
         catch(java.net.SocketException ex){
             println "$address - No Connection - $ex"
@@ -60,7 +60,11 @@ if (args.size() < 1) {
 }
 
 dataMan.createDB()
-spider(args[0])
+spider(args[0], dataMan)
 
 def onionsToTest = dataMan.getOnionsForTesting('test')
-def onionsToTest = dataMan.getOnionsForTesting('spider')
+withPool{
+    onionsToTest.eachParallel{testConnection(it.url, dataMan)}
+    def onionsToSpider = dataMan.getOnionsForTesting('spider')
+    onionsToSpider.eachParallel{spider(it.url, dataMan)}
+}
