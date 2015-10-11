@@ -50,11 +50,8 @@ Boolean testConnection(String address, DataMan dataMan){
                 dataMan.modifyRecord(address,'test', true, false)
             }
         }
-        catch(java.net.SocketException ex){
-            println "$address - No Connection - $ex"
-        }
-        catch(java.net.ProtocolException ex){
-            println "$address - No Connection - $ex"
+        catch(all){
+            println "$address - No Connection - $all"
         }
 }
 
